@@ -24,5 +24,9 @@ Git ワークフローを自動化する Claude Code プラグインパッケー
 ## インストール
 
 ```bash
-claude plugins install --git <repo-url> --path packages/git
+# 1. marketplace として登録
+claude plugins marketplace add git@github.com:mjcreativelab/mjcreativelab-claude-plugins.git
+
+# 2. git プラグインをインストール
+claude plugins install git
 ```
