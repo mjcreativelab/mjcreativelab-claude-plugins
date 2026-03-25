@@ -1,0 +1,19 @@
+{
+  "name": "mjcreativelab-claude-plugins",
+  "owner": {
+    "name": "mjcreativelab",
+    "url": "https://github.com/mjcreativelab"
+  },
+  "description": "Claude Code 用プラグイン集",
+  "plugins": [
+    {
+      "name": "git",
+      "description": "Git ワークフローを自動化するプラグイン（smart-commit, smart-pr）",
+      "source": "./packages/git",
+      "version": "1.0.0",
+      "author": {
+        "name": "mjcreativelab"
+      }
+    }
+  ]
+}
