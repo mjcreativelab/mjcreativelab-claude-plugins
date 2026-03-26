@@ -32,3 +32,18 @@ packages/
 - フックは `hooks/` ディレクトリにスクリプトとして配置
 - ルールは `rules/` ディレクトリに `.md` ファイルとして配置
 - 新規プラグインは `packages/` 下にディレクトリを作成し、必要な種類（skills, hooks, rules）のサブディレクトリだけ配置する
+
+## スキルファイル形式
+
+`SKILL.md` の frontmatter は `name`（kebab-case）と `description` の2フィールド:
+```yaml
+---
+name: my-skill
+description: スキルの説明（日本語）
+---
+```
+
+## コミット規約
+
+- Conventional Commits + GitMoji（例: `✨ feat(smart-pr): 機能の説明`）
+- subject は日本語、末尾にピリオド不要
