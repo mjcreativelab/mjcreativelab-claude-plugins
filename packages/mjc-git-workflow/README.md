@@ -1,4 +1,4 @@
-# git
+# mjc-git-workflow
 
 Git ワークフローを自動化する Claude Code プラグインパッケージ。
 
@@ -27,6 +27,6 @@ Git ワークフローを自動化する Claude Code プラグインパッケー
 # 1. marketplace として登録
 claude plugins marketplace add git@github.com:mjcreativelab/mjcreativelab-claude-plugins.git
 
-# 2. git プラグインをインストール
-claude plugins install git
+# 2. mjc-git-workflow プラグインをインストール
+claude plugins install mjc-git-workflow
 ```
