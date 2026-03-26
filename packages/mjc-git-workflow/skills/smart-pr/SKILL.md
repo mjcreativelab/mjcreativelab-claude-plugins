@@ -25,13 +25,13 @@ GitHub API 操作には **GitHub MCP ツール**を優先（承認不要）。gi
 
 以下を並列実行:
 
-**Bash**: `git remote get-url origin`（owner/repo 抽出）、現在のブランチ名、`git log --oneline main..HEAD`、`git diff main...HEAD --stat`、`git status --short`
+**Bash**: `git remote get-url origin`（owner/repo 抽出）、現在のブランチ名、デフォルトブランチの特定（`git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'`）、`git log --oneline <default-branch>..HEAD`、`git diff <default-branch>...HEAD --stat`、`git status --short`
 
 **MCP**: `list_pull_requests`（head: `<owner>:<branch>`）、`get_me`
 
 - PR が存在する → **更新フロー**へ
 - PR が存在しない → **新規作成フロー**へ
-- main と差分なし → 中止
+- デフォルトブランチと差分なし → 中止
 - 未コミット変更あり → ユーザーに通知
 
 ### 2. デフォルトブランチとの同期確認
@@ -41,7 +41,7 @@ GitHub API 操作には **GitHub MCP ツール**を優先（承認不要）。gi
 1. `git fetch origin` でリモートを最新化
 2. `git merge-base --is-ancestor origin/<default-branch> HEAD` でデフォルトブランチの最新が作業ブランチに含まれているか確認
 3. 含まれていない（更新がある）場合 → `git merge origin/<default-branch>` を実行
-   - **競合が発生した場合** → 競合ファイルを読み取り、コンテキストを理解した上で解決する。解決後 `git add` + `git commit` で完了
+   - **競合が発生した場合** → 競合ファイルを読み取り、コンテキストを理解した上で解決する。解決後の差分をユーザーに提示し、承認を得てから `git add` + `git commit` で完了
    - 競合が複雑で自動解決が困難な場合 → ユーザーに状況を説明し、手動解決を依頼する
 4. 含まれている場合 → スキップ
 
