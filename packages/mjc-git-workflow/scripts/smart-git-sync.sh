@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Smart Git Sync
-# デフォルトブランチに切り替え、リモート同期し、マージ済みブランチを一覧表示する。
+# デフォルトブランチに切り替え、リモート同期し、マージ済み・リモート削除済み・squash マージ済みブランチを一覧表示する。
 
 # --- 1. 未コミット変更チェック ---
 if [ -n "$(git status --porcelain)" ]; then
@@ -48,7 +48,69 @@ else
   echo "EOF"
 fi
 
-# --- 5. 現在の状態 ---
+# --- 5. リモート削除済みブランチ一覧 ---
+# upstream が gone になっているローカルブランチを検出
+GONE_BRANCHES=""
+while IFS= read -r line; do
+  if echo "$line" | grep -q '\[.*: gone\]'; then
+    branch=$(echo "$line" | sed 's/^[* ]*//' | awk '{print $1}')
+    # 保護ブランチ・既にマージ済みで検出済みのブランチはスキップ
+    if echo "$branch" | grep -qE '^(main|master|develop)$|^release/|^hotfix/'; then
+      continue
+    fi
+    if [ -n "$MERGED_BRANCHES" ] && echo "$MERGED_BRANCHES" | grep -qw "$branch"; then
+      continue
+    fi
+    GONE_BRANCHES="${GONE_BRANCHES:+$GONE_BRANCHES
+}$branch"
+  fi
+done <<< "$(git branch -vv)"
+
+if [ -z "$GONE_BRANCHES" ]; then
+  echo "GONE_CANDIDATES=none"
+else
+  echo "GONE_CANDIDATES<<EOF"
+  echo "$GONE_BRANCHES"
+  echo "EOF"
+fi
+
+# --- 6. Squash マージ済みブランチ検出 ---
+# git commit-tree + git cherry 方式で squash merge を検出
+SQUASH_BRANCHES=""
+while IFS= read -r branch; do
+  branch=$(echo "$branch" | sed 's/^[* ]*//')
+  # 空行・保護ブランチ・既に検出済みブランチはスキップ
+  [ -z "$branch" ] && continue
+  if echo "$branch" | grep -qE '^(main|master|develop)$|^release/|^hotfix/'; then
+    continue
+  fi
+  if [ -n "$MERGED_BRANCHES" ] && echo "$MERGED_BRANCHES" | grep -qw "$branch"; then
+    continue
+  fi
+  if [ -n "$GONE_BRANCHES" ] && echo "$GONE_BRANCHES" | grep -qw "$branch"; then
+    continue
+  fi
+
+  merge_base=$(git merge-base "$DEFAULT_BRANCH" "$branch" 2>/dev/null) || continue
+  tree=$(git rev-parse "$branch^{tree}" 2>/dev/null) || continue
+  dangling_commit=$(git commit-tree "$tree" -p "$merge_base" -m "temp" 2>/dev/null) || continue
+  cherry_result=$(git cherry "$DEFAULT_BRANCH" "$dangling_commit" "$merge_base" 2>/dev/null) || continue
+
+  if [ -n "$cherry_result" ] && ! echo "$cherry_result" | grep -q '^+'; then
+    SQUASH_BRANCHES="${SQUASH_BRANCHES:+$SQUASH_BRANCHES
+}$branch"
+  fi
+done <<< "$(git branch | grep -vE "$PROTECTED_PATTERN")"
+
+if [ -z "$SQUASH_BRANCHES" ]; then
+  echo "SQUASH_CANDIDATES=none"
+else
+  echo "SQUASH_CANDIDATES<<EOF"
+  echo "$SQUASH_BRANCHES"
+  echo "EOF"
+fi
+
+# --- 7. 現在の状態 ---
 echo ""
 echo "BRANCH=$DEFAULT_BRANCH"
 echo "RECENT_COMMITS<<EOF"
