@@ -15,9 +15,14 @@ packages/
 
 ## 配布方法
 
-Git リポジトリから直接インストール:
+### 1. marketplace として登録
 ```
-claude plugins install --git https://github.com/mjcreativelab/claude-plugins --path packages/<plugin-name>
+/plugin marketplace add mjcreativelab/claude-plugins
+```
+
+### 2. プラグインをインストール
+```
+/plugin install <plugin-name>@mjcreativelab-claude-plugins
 ```
 
 ## 開発ガイドライン

@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "mjc-git-workflow",
-      "description": "Git ワークフローを自動化するプラグイン（smart-commit, smart-pr）",
+      "description": "Git ワークフローを自動化するプラグイン（smart-issue-resolve, smart-commit, smart-pr）",
       "source": "./packages/mjc-git-workflow",
       "version": "1.0.0",
       "author": {

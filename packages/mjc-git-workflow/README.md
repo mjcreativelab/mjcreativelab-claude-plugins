@@ -28,6 +28,18 @@ Git ワークフローを自動化する Claude Code プラグインパッケー
 /smart-pr -p レビュアー向け補足にパフォーマンスの懸念を書いて
 ```
 
+### smart-issue-resolve
+
+GitHub Issue を起点に作業を開始する。
+Issue の内容を読み取り、適切なブランチを作成してチェックアウトし、要件に基づいて実装を行う。
+作業完了後は `/smart-commit` の使用を提案する（勝手にコミットしない）。
+`-p` オプションで作業に関する追加指示を渡すことができる。
+
+```
+/smart-issue-resolve #134
+/smart-issue-resolve #134 -p テストも書いて
+```
+
 ## 前提条件
 
 このプラグインの使用には、以下のインストールが必要です。
@@ -37,10 +49,10 @@ Git ワークフローを自動化する Claude Code プラグインパッケー
 
 ## インストール
 
-```bash
+```
 # 1. marketplace として登録
-claude plugins marketplace add git@github.com:mjcreativelab/mjcreativelab-claude-plugins.git
+/plugin marketplace add mjcreativelab/mjcreativelab-claude-plugins
 
 # 2. mjc-git-workflow プラグインをインストール
-claude plugins install mjc-git-workflow
+/plugin install mjc-git-workflow@mjcreativelab-claude-plugins
 ```
