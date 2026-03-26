@@ -7,9 +7,9 @@
   "description": "Claude Code 用プラグイン集",
   "plugins": [
     {
-      "name": "git",
+      "name": "mjc-git-workflow",
       "description": "Git ワークフローを自動化するプラグイン（smart-commit, smart-pr）",
-      "source": "./packages/git",
+      "source": "./packages/mjc-git-workflow",
       "version": "1.0.0",
       "author": {
         "name": "mjcreativelab"
