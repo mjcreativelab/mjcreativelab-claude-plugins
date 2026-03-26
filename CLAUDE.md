@@ -6,11 +6,14 @@ Claude Code 用プラグイン（skills, hooks, rules）の開発リポジトリ
 
 ```
 packages/
-  <plugin-name>/        # 各プラグインのディレクトリ
+  mjc-git-workflow/     # Git ワークフロー系スキル
+  <plugin-name>/        # 新規プラグインのテンプレート構造
     skills/             # スキル定義（.md ファイル）※必要な場合のみ
     hooks/              # フック定義（シェルスクリプト等）※必要な場合のみ
     rules/              # ルール定義（.md ファイル）※必要な場合のみ
     README.md           # プラグインの説明・使い方
+.claude/
+  rules/                # プロジェクト共通ルール（Git 規約など）
 ```
 
 ## 配布方法
@@ -43,7 +46,3 @@ description: スキルの説明（日本語）
 ---
 ```
 
-## コミット規約
-
-- Conventional Commits + GitMoji（例: `✨ feat(smart-pr): 機能の説明`）
-- subject は日本語、末尾にピリオド不要
