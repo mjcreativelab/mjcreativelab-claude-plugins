@@ -44,6 +44,7 @@ packages/
 ## スキル改修時の注意
 
 - スキルにスクリプトがある場合、`scripts/*.sh` + `skills/*/SKILL.md` + `skills/*/README.md` の3ファイルを同時に更新すること
+- スキルの動作が `.claude/rules/` のルール（例: git-conventions.md）と関連する場合、ルールファイルも整合性を保って更新すること
 - シェルスクリプト改修後は `bash -n scripts/<name>.sh` で構文チェックすること
 
 ## スキルファイル形式
