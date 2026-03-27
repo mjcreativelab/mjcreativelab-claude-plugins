@@ -2,18 +2,35 @@
 
 Claude Code 用プラグイン（skills, hooks, rules）の開発リポジトリ。
 
+## よく使うコマンド
+
+```bash
+# スキルのシェルスクリプト構文チェック
+bash -n packages/<plugin>/scripts/<name>.sh
+
+# SKILL.md frontmatter 確認（name, description の存在チェック）
+head -5 packages/<plugin>/skills/<skill-name>/SKILL.md
+```
+
 ## リポジトリ構造
 
 ```
 packages/
   mjc-git-workflow/     # Git ワークフロー系スキル
     skills/smart-commit/       # 差分を作業単位で分割コミット
+      SKILL.md / README.md
     skills/smart-pr/           # PR 作成・更新の自動化
+      SKILL.md / README.md
     skills/smart-git-sync/     # ブランチ同期・整理
+      SKILL.md / README.md
     skills/smart-issue-resolve/ # Issue からブランチ作成〜実装
+      SKILL.md / README.md
     skills/smart-issue-plan/   # Issue の実装計画を作成・更新
+      SKILL.md / README.md
     skills/smart-review/       # ローカル変更のセルフレビュー
+      SKILL.md / README.md
     skills/smart-review-apply/ # レビューフィードバックの適用
+      SKILL.md / README.md
   <plugin-name>/        # 新規プラグインのテンプレート構造
     skills/             # スキル定義（.md ファイル）※必要な場合のみ
     scripts/            # スキルから呼び出すスクリプト ※必要な場合のみ
@@ -30,7 +47,7 @@ packages/
 
 ### 1. marketplace として登録
 ```
-/plugin marketplace add mjcreativelab/claude-plugins
+/plugin marketplace add mjcreativelab/mjcreativelab-claude-plugins
 ```
 
 ### 2. プラグインをインストール
