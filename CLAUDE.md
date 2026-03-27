@@ -23,7 +23,7 @@ packages/
 .claude/
   rules/                # プロジェクト共通ルール（Git 規約など）
   skills/
-    auto-release.md     # バージョン更新・タグ付け・リリース（プロジェクトローカル）
+    auto-release/       # バージョン更新・タグ付け・リリース（プロジェクトローカル）
 ```
 
 ## 配布方法
@@ -66,6 +66,8 @@ packages/
 4. この `CLAUDE.md` のリポジトリ構造セクションにスキルを追記
 
 ## スキルファイル形式
+
+プロジェクトローカルスキル（`.claude/skills/`）もプラグインスキルと同様に `<name>/SKILL.md` のディレクトリ構造が必須（フラットファイル配置では認識されない）
 
 `SKILL.md` の frontmatter は `name`（kebab-case）と `description` の2フィールド:
 ```yaml
