@@ -22,6 +22,8 @@ packages/
     README.md           # プラグインの説明・使い方
 .claude/
   rules/                # プロジェクト共通ルール（Git 規約など）
+  skills/
+    auto-release.md     # バージョン更新・タグ付け・リリース（プロジェクトローカル）
 ```
 
 ## 配布方法
@@ -46,6 +48,7 @@ packages/
 
 ## スキル改修時の注意
 
+- スキル内の GitHub API 操作は MCP ツールに統一する（`gh` CLI との混在を避ける）
 - スキル改修時は `skills/*/SKILL.md` + `packages/*/README.md` を同時に更新すること
 - スキルに外部スクリプト（`scripts/*.sh`）がある場合はそれも同時に更新すること
 - スキルの動作が `.claude/rules/` のルール（例: git-conventions.md）と関連する場合、ルールファイルも整合性を保って更新すること
