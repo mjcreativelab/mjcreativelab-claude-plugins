@@ -54,6 +54,9 @@ packages/
 - スキルの動作が `.claude/rules/` のルール（例: git-conventions.md）と関連する場合、ルールファイルも整合性を保って更新すること
 - シェルスクリプト改修後は `bash -n scripts/<name>.sh` で構文チェックすること
 - SKILL.md の frontmatter に `name`（kebab-case）と `description` が含まれることを目視確認すること
+- SKILL.md にインラインで埋め込むシェルスクリプトに正規表現パターン（`^[[:space:]]` 等）が含まれる場合、zsh がグロブ展開してエラーになる。`bash /dev/stdin` または一時ファイル経由で実行する旨を明記すること
+- スキルから外部スクリプトを参照する場合、プラグインのインストール先パスは環境ごとに異なる（`~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/`）ため、固定パスに依存しないこと
+- スキルの手順に `rm -f` 等の破壊的コマンドを含めない。一時ファイルは OS の一時領域に任せ、明示削除を必須にしないこと
 
 ## 新規スキル追加手順
 
