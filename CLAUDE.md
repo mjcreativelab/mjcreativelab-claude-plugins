@@ -22,6 +22,8 @@ packages/
     README.md           # プラグインの説明・使い方
 .claude/
   rules/                # プロジェクト共通ルール（Git 規約など）
+  skills/
+    auto-release.md     # バージョン更新・タグ付け・リリース（プロジェクトローカル）
 ```
 
 ## 配布方法
