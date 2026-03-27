@@ -139,21 +139,19 @@ GitHub MCP ツール (`create_pull_request`) で PR を作成する。
 <メジャー/マイナー/パッチ>: <理由>
 ```
 
-PR 作成後、`issue_write` でアサインとラベル（`release` があれば付与）を設定する。
+PR 作成後、`issue_write` でアサインとラベル（`release` があれば付与）を設定する（GitHub API では PR も Issue 番号で操作可能）。
 
 ### 11. squash merge
 
-PR の CI チェックが通っていることを確認してから squash merge する:
+PR の CI チェックが通っていることを確認してから `merge_pull_request`（merge_method: `squash`）で squash merge する。
 
-```bash
-gh pr merge <pr-number> --squash --delete-branch
-```
-
-CI チェックが設定されていない場合はそのままマージする。
+CI チェックが設定されていない場合はそのままマージする。マージ後、リモートのブランチを削除する。
 
 ### 12. タグの再作成
 
-squash merge でコミットが変わるため、タグを main 上の新しいコミットに付け直す:
+squash merge でコミットが変わるため、タグを main 上の新しいコミットに付け直す。
+
+まず `git status` で未コミット変更がないことを確認してから:
 
 ```bash
 git checkout main
