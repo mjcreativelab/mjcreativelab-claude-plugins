@@ -9,8 +9,11 @@ packages/
   mjc-git-workflow/     # Git ワークフロー系スキル
     skills/smart-commit/       # 差分を作業単位で分割コミット
     skills/smart-pr/           # PR 作成・更新の自動化
-    skills/smart-git-sync/     # ブランチ同期・整理（scripts/smart-git-sync.sh を使用）
+    skills/smart-git-sync/     # ブランチ同期・整理
     skills/smart-issue-resolve/ # Issue からブランチ作成〜実装
+    skills/smart-issue-plan/   # Issue の実装計画を作成・更新
+    skills/smart-review/       # ローカル変更のセルフレビュー
+    skills/smart-review-apply/ # レビューフィードバックの適用
   <plugin-name>/        # 新規プラグインのテンプレート構造
     skills/             # スキル定義（.md ファイル）※必要な場合のみ
     scripts/            # スキルから呼び出すスクリプト ※必要な場合のみ
@@ -43,9 +46,18 @@ packages/
 
 ## スキル改修時の注意
 
-- スキルにスクリプトがある場合、`scripts/*.sh` + `skills/*/SKILL.md` + `skills/*/README.md` の3ファイルを同時に更新すること
+- スキル改修時は `skills/*/SKILL.md` + `packages/*/README.md` を同時に更新すること
+- スキルに外部スクリプト（`scripts/*.sh`）がある場合はそれも同時に更新すること
 - スキルの動作が `.claude/rules/` のルール（例: git-conventions.md）と関連する場合、ルールファイルも整合性を保って更新すること
 - シェルスクリプト改修後は `bash -n scripts/<name>.sh` で構文チェックすること
+- SKILL.md の frontmatter に `name`（kebab-case）と `description` が含まれることを目視確認すること
+
+## 新規スキル追加手順
+
+1. `packages/<plugin>/skills/<skill-name>/` ディレクトリを作成
+2. `SKILL.md` を作成（frontmatter: `name` + `description`）
+3. `packages/<plugin>/README.md` にスキルの説明・使用例を追加
+4. この `CLAUDE.md` のリポジトリ構造セクションにスキルを追記
 
 ## スキルファイル形式
 
