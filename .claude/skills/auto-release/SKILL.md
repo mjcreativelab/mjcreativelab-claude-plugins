@@ -129,18 +129,7 @@ GitHub MCP ツール (`create_pull_request`) で PR を作成する。
 
 **タイトル**: `release(<package-name>): v<version>`
 
-**本文テンプレート**:
-
-```markdown
-## 概要
-<package-name> v<version> リリース
-
-## 変更内容（前バージョンからの差分）
-- ...（差分分析の結果をリスト化）
-
-## バージョンバンプ理由
-<メジャー/マイナー/パッチ>: <理由>
-```
+**本文**: [assets/release-pr-template.md](assets/release-pr-template.md) を使用。
 
 PR 作成後、`issue_write` でアサインとラベル（`release` があれば付与）を設定する（GitHub API では PR も Issue 番号で操作可能）。
 
