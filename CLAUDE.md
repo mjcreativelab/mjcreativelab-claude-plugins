@@ -7,73 +7,69 @@ Claude Code 用プラグイン（skills, hooks, rules）の開発リポジトリ
 ```bash
 # スキルのシェルスクリプト構文チェック
 bash -n packages/<plugin>/scripts/<name>.sh
+# 例: bash -n packages/mjc-git-workflow/scripts/smart-commit.sh
 
 # SKILL.md frontmatter 確認（name, description の存在チェック）
 head -5 packages/<plugin>/skills/<skill-name>/SKILL.md
+# 例: head -5 packages/mjc-git-workflow/skills/smart-commit/SKILL.md
 ```
 
 ## リポジトリ構造
 
+現在のパッケージ一覧（`packages/` 配下）:
+
 ```
 packages/
-  mjc-git-workflow/     # Git ワークフロー系スキル
+  mjc-git-workflow/           # Git ワークフロー系スキル
     skills/smart-commit/       # 差分を作業単位で分割コミット
-      SKILL.md / README.md
     skills/smart-pr/           # PR 作成・更新の自動化
-      SKILL.md / README.md
     skills/smart-git-sync/     # ブランチ同期・整理
-      SKILL.md / README.md
     skills/smart-issue-resolve/ # Issue からブランチ作成〜実装
-      SKILL.md / README.md
     skills/smart-issue-plan/   # Issue の実装計画を作成・更新
-      SKILL.md / README.md
     skills/smart-review/       # ローカル変更のセルフレビュー
-      SKILL.md / README.md
     skills/smart-review-apply/ # レビューフィードバックの適用
-      SKILL.md / README.md
-  <plugin-name>/        # 新規プラグインのテンプレート構造
-    skills/             # スキル定義（.md ファイル）※必要な場合のみ
-    scripts/            # スキルから呼び出すスクリプト ※必要な場合のみ
-    hooks/              # フック定義（シェルスクリプト等）※必要な場合のみ
-    rules/              # ルール定義（.md ファイル）※必要な場合のみ
-    README.md           # プラグインの説明・使い方
 .claude/
-  rules/                # プロジェクト共通ルール（Git 規約など）
+  rules/                       # プロジェクト共通ルール（Git 規約など）
   skills/
-    auto-release/       # バージョン更新・タグ付け・リリース（プロジェクトローカル）
+    auto-release/              # バージョン更新・タグ付け・リリース（プロジェクトローカル）
+```
+
+新規プラグインのディレクトリ構成（必要なサブディレクトリだけ配置）:
+
+```
+packages/<plugin-name>/
+  skills/    # スキル定義（SKILL.md）
+  scripts/   # スキルから呼び出すシェルスクリプト
+  hooks/     # フック定義
+  rules/     # ルール定義（.md）
+  README.md
 ```
 
 ## 配布方法
 
-### 1. marketplace として登録
-```
+```bash
+# marketplace として登録
 /plugin marketplace add mjcreativelab/mjcreativelab-claude-plugins
-```
 
-### 2. プラグインをインストール
-```
+# プラグインをインストール
 /plugin install <plugin-name>@mjcreativelab-claude-plugins
 ```
 
 ## 開発ガイドライン
 
 - 各プラグインは `packages/` 下に独立ディレクトリとして配置
-- スキルファイルは YAML frontmatter + Markdown 形式
-- フックは `hooks/` ディレクトリにスクリプトとして配置
-- ルールは `rules/` ディレクトリに `.md` ファイルとして配置
-- 新規プラグインは `packages/` 下にディレクトリを作成し、必要な種類（skills, hooks, rules）のサブディレクトリだけ配置する
+- スキルファイルは YAML frontmatter + Markdown 形式（`name` + `description` の2フィールド必須）
+- フックは `hooks/`、ルールは `rules/` に配置
 
 ## スキル改修時の注意
 
-- スキル内の GitHub API 操作は MCP ツールに統一する（`gh` CLI との混在を避ける）
-- スキル改修時は `skills/*/SKILL.md` + `packages/*/README.md` を同時に更新すること
-- スキルに外部スクリプト（`scripts/*.sh`）がある場合はそれも同時に更新すること
-- スキルの動作が `.claude/rules/` のルール（例: git-conventions.md）と関連する場合、ルールファイルも整合性を保って更新すること
-- シェルスクリプト改修後は `bash -n scripts/<name>.sh` で構文チェックすること
-- SKILL.md の frontmatter に `name`（kebab-case）と `description` が含まれることを目視確認すること
+- GitHub API 操作は MCP ツールに統一する（`gh` CLI との混在を避ける）
+- `SKILL.md` + `README.md` を同時に更新すること。外部スクリプト（`scripts/*.sh`）がある場合はそれも更新
+- スキルの動作が `.claude/rules/` のルールと関連する場合、ルールファイルも整合性を保って更新すること
+- シェルスクリプト改修後は `bash -n` で構文チェックすること
 - SKILL.md にインラインで埋め込むシェルスクリプトに正規表現パターン（`^[[:space:]]` 等）が含まれる場合、zsh がグロブ展開してエラーになる。`bash /dev/stdin` または一時ファイル経由で実行する旨を明記すること
-- スキルから外部スクリプトを参照する場合、プラグインのインストール先パスは環境ごとに異なる（`~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/`）ため、固定パスに依存しないこと
-- スキルの手順に `rm -f` 等の破壊的コマンドを含めない。一時ファイルは OS の一時領域に任せ、明示削除を必須にしないこと
+- スキルから外部スクリプトを参照する場合、インストール先パスは環境ごとに異なる（`~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/`）ため、固定パスに依存しないこと
+- スキルの手順に `rm -f` 等の破壊的コマンドを含めない。一時ファイルは OS の一時領域に任せること
 
 ## 新規スキル追加手順
 
@@ -86,11 +82,9 @@ packages/
 
 プロジェクトローカルスキル（`.claude/skills/`）もプラグインスキルと同様に `<name>/SKILL.md` のディレクトリ構造が必須（フラットファイル配置では認識されない）
 
-`SKILL.md` の frontmatter は `name`（kebab-case）と `description` の2フィールド:
 ```yaml
 ---
 name: my-skill
 description: スキルの説明（日本語）
 ---
 ```
-
