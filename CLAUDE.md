@@ -5,9 +5,9 @@ Claude Code 用プラグイン（skills, hooks, rules）の開発リポジトリ
 ## よく使うコマンド
 
 ```bash
-# スキルのシェルスクリプト構文チェック
-bash -n packages/<plugin>/scripts/<name>.sh
-# 例: bash -n packages/mjc-git-workflow/scripts/smart-commit.sh
+# assets/ 内のシェルスクリプト構文チェック
+bash -n packages/<plugin>/skills/<skill-name>/assets/<name>.sh
+# 例: bash -n packages/mjc-git-workflow/skills/smart-git-sync/assets/git-sync.sh
 
 # SKILL.md frontmatter 確認（name, description の存在チェック）
 head -5 packages/<plugin>/skills/<skill-name>/SKILL.md
@@ -28,6 +28,7 @@ packages/
     skills/smart-issue-plan/   # Issue の実装計画を作成・更新
     skills/smart-review/       # ローカル変更のセルフレビュー
     skills/smart-review-apply/ # レビューフィードバックの適用
+    references/                # 複数スキル共有の参照表（gitmoji-types.md 等）
 .claude/
   rules/                       # プロジェクト共通ルール（Git 規約など）
   skills/
@@ -39,9 +40,12 @@ packages/
 ```
 packages/<plugin-name>/
   skills/    # スキル定義（SKILL.md）
+    <skill-name>/
+      assets/      # スキル固有のテンプレート・スクリプト（SKILL.md から参照）
   scripts/   # スキルから呼び出すシェルスクリプト
   hooks/     # フック定義
   rules/     # ルール定義（.md）
+  references/  # 複数スキルで共有する参照表・定義（SKILL.md から参照）
   README.md
 ```
 
@@ -63,6 +67,7 @@ packages/<plugin-name>/
 
 ## スキル改修時の注意
 
+- SKILL.md が長くなる場合、テンプレート・スクリプトは `assets/`、共有参照表は `references/` に切り出し、SKILL.md からリンク参照する（コンテキスト削減）
 - GitHub API 操作は MCP ツールに統一する（`gh` CLI との混在を避ける）
 - `SKILL.md` + `README.md` を同時に更新すること。外部スクリプト（`scripts/*.sh`）がある場合はそれも更新
 - スキルの動作が `.claude/rules/` のルールと関連する場合、ルールファイルも整合性を保って更新すること
