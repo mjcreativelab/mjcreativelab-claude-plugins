@@ -28,7 +28,6 @@ packages/
     skills/smart-issue-plan/   # Issue の実装計画を作成・更新
     skills/smart-review/       # ローカル変更のセルフレビュー
     skills/smart-review-apply/ # レビューフィードバックの適用
-    references/                # 複数スキル共有の参照表（gitmoji-types.md 等）
 .claude/
   rules/                       # プロジェクト共通ルール（Git 規約など）
   skills/
