@@ -40,7 +40,8 @@ packages/
 packages/<plugin-name>/
   skills/    # スキル定義（SKILL.md）
     <skill-name>/
-      assets/      # スキル固有のテンプレート・スクリプト（SKILL.md から参照）
+      assets/      # テンプレート・スクリプト（出力物の雛形、実行スクリプト）
+      references/  # 参照表・定義（対応表、ルール表など読み取り専用の情報）
   scripts/   # スキルから呼び出すシェルスクリプト
   hooks/     # フック定義
   rules/     # ルール定義（.md）
@@ -65,7 +66,7 @@ packages/<plugin-name>/
 
 ## スキル改修時の注意
 
-- SKILL.md が長くなる場合、テンプレート・スクリプトは `assets/` に切り出し、SKILL.md からリンク参照する（コンテキスト削減）
+- SKILL.md が長くなる場合、スキル直下の `assets/`（テンプレート・スクリプト）または `references/`（参照表・定義）に切り出し、SKILL.md からリンク参照する（コンテキスト削減）
 - GitHub API 操作は MCP ツールに統一する（`gh` CLI との混在を避ける）
 - `SKILL.md` + `README.md` を同時に更新すること。外部スクリプト（`scripts/*.sh`）がある場合はそれも更新
 - スキルの動作が `.claude/rules/` のルールと関連する場合、ルールファイルも整合性を保って更新すること
