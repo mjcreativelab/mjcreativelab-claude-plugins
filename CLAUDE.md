@@ -39,6 +39,12 @@ packages/
       smart-review/              # ローカル変更のセルフレビュー
       smart-review-apply/        # レビューフィードバックの適用
     README.md
+  mjc-claude-skill-tool/           # スキル品質改善ツール
+    .claude-plugin/
+      plugin.json
+    skills/
+      skill-improver/              # skill-creator 連携 + コンテキスト管理・静的チェック
+    README.md
 .claude/
   rules/                         # プロジェクト共通ルール（Git 規約など）
   skills/
