@@ -1,13 +1,8 @@
 ---
 name: skill-improver
 description: >
-  既存の SKILL.md を改善・リファクタリングするスキル。skill-creator による eval 駆動の改善ループに加え、
-  コンテキスト管理（圧縮耐性・読み込み効率・中間データ外部化）の設計検証と静的チェックを実行する。
-  ユーザーがスキルの品質向上、SKILL.md の改善、コンテキスト効率の最適化、description のトリガー精度改善、
-  references/assets への切り出し判断、スキルのリファクタリングなどを求めたときに使用すること。
-  「スキルを改善して」「SKILL.md を良くして」「コンテキスト管理が弱い」「eval 回して改善したい」
-  「500行超えそう」「description を最適化したい」といった表現が目印。
-  スキルの新規作成には使わない（それは skill-creator の役割）。
+  既存スキルの改善・リファクタリング。skill-creator の eval 駆動改善 + コンテキスト管理検証・静的チェックを実行する。
+  「スキルを改善して」「SKILL.md を良くして」「eval 回して」「500行超えそう」等が目印。新規作成は skill-creator を使う。
 argument-hint: "<skill-directory-path> [-p <prompt>]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Bash, Write, Skill, Edit, AskUserQuestion
@@ -104,13 +99,14 @@ skill-creator の eval ループでは検出しにくい問題を静的に検証
 
 Phase 1 のセッションが長くなるとコンテキスト圧縮が発生し、Phase 1 で読んだ内容が失われている可能性がある。Phase 2 では必ず最新のファイルを読み直す。
 
-1. `{スキルパス}` のディレクトリを Glob で列挙する
+1. `{スキルパス}` のディレクトリを Glob で列挙する。もし `{スキルパス}` がコンテキスト圧縮で不明な場合は、AskUserQuestion で確認する
 2. SKILL.md を Read する（Phase 1 で読んだキャッシュに頼らず必ず再 Read する）
-3. 補助ファイル（`references/`、`assets/`、`scripts/` 等）を一覧として把握する（この時点では Read しない）
+3. SKILL.md の frontmatter `name` フィールドから `{スキル名}` を確定する。以降の `/tmp` ファイルパスはこの値を使う
+4. 補助ファイル（`references/`、`assets/`、`scripts/` 等）を一覧として把握する（この時点では Read しない）
 
 ### Step 2: コンテキスト管理チェック
 
-Phase 1 が実行済みの場合、`/tmp/skill-improver-phase1-{スキル名}.md` を Read して Phase 1 の知見を把握する（どこを改善したかを踏まえて検証するため）。ファイルが存在しない場合（Phase 1 スキップ時等）はそのまま進む。
+Phase 1 が実行済みの場合、`/tmp/skill-improver-phase1-{スキル名}.md` を Read して Phase 1 の知見を把握する（どこを改善したかを踏まえて検証するため）。`{スキル名}` が不明な場合は `/tmp/skill-improver-phase1-*.md` を Glob で探す。ファイルが存在しない場合（Phase 1 スキップ時等）はそのまま進む。
 
 SKILL.md の構造を以下の観点で検証する。
 
