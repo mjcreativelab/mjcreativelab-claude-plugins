@@ -1,15 +1,24 @@
 ---
 name: smart-pr
-description: 現在のブランチから GitHub Pull Request を作成または更新する。作業内容の自動要約・ラベル付与・関連 Issue 紐づけを行う。ユーザーが「PR 作って」「プルリク作成」「PR 更新して」「/smart-pr」と言ったら起動する。
+description: >
+  現在のブランチから GitHub Pull Request を作成または更新する。作業内容の自動要約・ラベル付与・関連 Issue 紐づけを行う。
+  「PR 作って」「プルリク作成」「PR 更新して」「/smart-pr」と言ったら起動する。
+  コミット（smart-commit）やレビュー（smart-review）とは別物。
+disable-model-invocation: true
+allowed-tools: Read, Bash, Glob, Grep, AskUserQuestion
 ---
 
 # Smart PR
 
 現在のブランチから PR を作成、または既存 PR を更新する。
 
-## オプション
+## 引数の解析
 
-`-p <プロンプト>`: PR のタイトル・本文・ラベル等に関する追加指示。
+`$ARGUMENTS` を以下のルールで解析する:
+
+- `-p` がある場合 → `-p` より後の部分を `{プロンプト}` として保持する
+- `-p` がない場合 → `{プロンプト}` は空
+- `{プロンプト}` は PR のタイトル・本文・ラベル等に関する追加指示として使う
 
 例: `-p ドラフトで作って` / `-p レビュアー向け補足に移行手順を書いて`
 
@@ -25,29 +34,47 @@ GitHub API 操作には **GitHub MCP ツール**を優先（承認不要）。gi
 
 以下を並列実行:
 
-**Bash**: `git remote get-url origin`（owner/repo 抽出）、現在のブランチ名、デフォルトブランチの特定（`git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'`）、`git log --oneline <default-branch>..HEAD`、`git diff <default-branch>...HEAD --stat`、`git status --short`
+**Bash**（1 回の呼び出しで連結実行）:
+```bash
+git remote get-url origin && git branch --show-current && git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' && git status --short
+```
 
-**MCP**: `list_pull_requests`（head: `<owner>:<branch>`）、`get_me`
+> デフォルトブランチ検出に `symbolic-ref` が失敗した場合は `develop` → `main` → `master` の順で `git show-ref --verify refs/remotes/origin/<name>` を試す。
 
-- PR が存在する → **更新フロー**へ
-- PR が存在しない → **新規作成フロー**へ
-- デフォルトブランチと差分なし → 中止
-- 未コミット変更あり → ユーザーに通知
+**MCP**（並列）:
+- `list_pull_requests`（head: `<owner>:<branch>`）で既存 PR を検索
+- `get_me` でアサイン用ユーザー名を取得
+
+**判定**:
+- デフォルトブランチにいる → 「作業ブランチで実行してください」と案内して終了
+- デフォルトブランチと差分なし → 「PR にする変更がありません」で終了
+- 未コミット変更あり → ユーザーに通知（`/smart-commit` を提案）
+- PR が存在する → **更新フロー**（Step 4-U）へ
+- PR が存在しない → **新規作成フロー**（Step 4-N）へ
 
 ### 2. デフォルトブランチとの同期確認
 
-以下を順に実行:
+```bash
+git fetch origin
+git merge-base --is-ancestor origin/<default-branch> HEAD
+```
 
-1. `git fetch origin` でリモートを最新化
-2. `git merge-base --is-ancestor origin/<default-branch> HEAD` でデフォルトブランチの最新が作業ブランチに含まれているか確認
-3. 含まれていない（更新がある）場合 → `git merge origin/<default-branch>` を実行
-   - **競合が発生した場合** → 競合ファイルを読み取り、コンテキストを理解した上で解決する。解決後の差分をユーザーに提示し、承認を得てから `git add` + `git commit` で完了
-   - 競合が複雑で自動解決が困難な場合 → ユーザーに状況を説明し、手動解決を依頼する
-4. 含まれている場合 → スキップ
+- 含まれている → スキップ
+- 含まれていない（デフォルトブランチに新しいコミットがある）→ `git merge origin/<default-branch>` を実行
+  - **競合が発生した場合** → 競合ファイルの一覧と内容をユーザーに提示し、解決方針を確認してから対応する。ユーザーの承認なく `git add` しない
+  - 競合なしでマージ成功 → 次へ
 
 ### 3. 未プッシュコミットのプッシュ
 
-リモートブランチ未存在なら `git push -u origin <branch>`、未プッシュあれば `git push`、それ以外はスキップ。
+- リモートブランチ未存在 → `git push -u origin <branch>`
+- 未プッシュコミットあり → `git push`
+- それ以外 → スキップ
+
+Bash で diff の統計も取得:
+```bash
+git log --oneline <default-branch>..HEAD
+git diff <default-branch>...HEAD --stat
+```
 
 ---
 
@@ -55,21 +82,27 @@ GitHub API 操作には **GitHub MCP ツール**を優先（承認不要）。gi
 
 ### 4-U. 差分特定・分析
 
-`pull_request_read` で現在の PR 本文・ラベルを取得。`git log`/`git diff` と照合し、PR に未反映の新規変更を特定。新規コミットがなければ「更新なし」で終了。
+`pull_request_read` で現在の PR を取得し、**タイトル・本文・ラベル・番号のみ保持** する（他のフィールドはコンテキストから破棄）。`git log`/`git diff` と照合し、PR に未反映の新規変更を特定する。
+
+新規コミットがなければ「更新する変更がありません」で終了。
 
 ### 5-U. PR 本文の更新
 
-既存本文をベースに **追記のみ**（既存記述は変更しない）:
-- 「変更内容」に新規コミット分を追記
-- 「レビュアー向け補足」に設計判断・影響範囲を追記（必要時）
-- 「関連 Issue」に新規 Issue を追記（該当時）
-- 「概要」は大きく方向が変わった場合のみ更新提案
+既存本文をベースに、新規変更分を **追記** する（既存記述は変更しない）:
 
-ラベルは追加のみ（削除しない）。タイトルは原則変更しない。
+| セクション | 更新ルール |
+|-----------|-----------|
+| 概要 | 方向性が大きく変わった場合のみ更新を提案 |
+| 変更内容 | 新規コミット分の箇条書きを末尾に追記 |
+| レビュアー向け補足 | 設計判断・影響範囲の追加があれば追記 |
+| 関連 Issue | 新規 Issue があれば追記 |
+
+- ラベルは追加のみ（削除しない）
+- タイトルは原則変更しない
 
 ### 6-U. ユーザー確認 → 更新実行
 
-更新内容を表示して承認を得る。`update_pull_request` で本文更新、必要なら `issue_write` でラベル追加。最後に PR URL を表示。
+更新内容（本文の差分・追加ラベル）を表示して承認を得る。`update_pull_request` で本文更新、必要なら `issue_write` でラベル追加。最後に PR URL を表示。
 
 ---
 
@@ -81,7 +114,7 @@ GitHub API 操作には **GitHub MCP ツール**を優先（承認不要）。gi
 
 ### 5-N. 関連 Issue 探索
 
-コミットメッセージやブランチ名に Issue 番号がなければ `search_issues` で候補を探し、ユーザーに紐づけるか確認。
+コミットメッセージやブランチ名に Issue 番号があればそれを使う。なければ `search_issues` で候補を探し、ユーザーに紐づけるか確認。
 
 ### 6-N. ラベル選定
 
@@ -95,10 +128,21 @@ GitHub API 操作には **GitHub MCP ツール**を優先（承認不要）。gi
 
 ### 8-N. ユーザー確認 → 作成実行
 
-タイトル・本文・ラベル・紐づけ Issue・ベースブランチを表示して承認。`create_pull_request` で作成後、`issue_write` でラベル・アサインを設定。最後に PR URL を表示。
+タイトル・本文・ラベル・紐づけ Issue・ベースブランチを表示して承認を得る。
+
+`create_pull_request` で作成後、`issue_write` でラベル・アサインを設定。最後に PR URL を表示。
 
 - 関連 Issue は `Closes #XX`（自動クローズ）または `Refs #XX`（参照のみ）
 - GitHub Project への追加はしない
+
+## コンテキスト管理
+
+長い会話でコンテキスト圧縮が発生した場合、Step 1 で取得した以下の情報を再取得する:
+- `git remote get-url origin`（owner/repo）
+- `git branch --show-current`（ブランチ名）
+- デフォルトブランチ名
+
+ただし本スキルは新規セッションでの実行を推奨しており（README 参照）、通常は圧縮が発生しない。
 
 ## 注意事項
 
