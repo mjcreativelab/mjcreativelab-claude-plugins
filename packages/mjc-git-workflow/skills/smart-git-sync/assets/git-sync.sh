@@ -10,6 +10,11 @@ if [ -n "$(git status --porcelain)" ]; then
   git status --short
   echo ""
   echo "UNCOMMITTED_CHANGES=true"
+  # ここで終了し、Claude がユーザーに続行を確認する。
+  # 続行する場合は SKIP_UNCOMMITTED_CHECK=1 を設定して再実行される。
+  if [ "${SKIP_UNCOMMITTED_CHECK:-0}" != "1" ]; then
+    exit 0
+  fi
 fi
 
 # --- 2. デフォルトブランチ特定 ---
@@ -30,11 +35,21 @@ CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 # --- 3. チェックアウト & 同期 ---
 if [ "$CURRENT_BRANCH" != "$DEFAULT_BRANCH" ]; then
+  echo "SWITCHING_FROM=$CURRENT_BRANCH"
   git checkout "$DEFAULT_BRANCH"
+else
+  echo "ALREADY_ON_DEFAULT=true"
 fi
 
 git fetch --prune
-git pull
+
+if ! git pull 2>/tmp/git-sync-pull-err; then
+  echo "PULL_FAILED=true"
+  echo "PULL_ERROR<<EOF"
+  cat /tmp/git-sync-pull-err
+  echo "EOF"
+  exit 0
+fi
 
 # --- 4. マージ済みブランチ一覧 ---
 PROTECTED_PATTERN='^\*|^[[:space:]]*(main|master|develop)$|^[[:space:]]*release/|^[[:space:]]*hotfix/'

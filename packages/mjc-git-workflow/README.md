@@ -66,6 +66,15 @@ GitHub Issue の実装計画を作成・更新する。
 /smart-review -o reviews/review.md
 ```
 
+### smart-git-sync
+
+デフォルトブランチ（develop or main）にチェックアウトし、fetch/pull してマージ済みブランチを削除する。
+マージ済み・リモート削除済み・squash マージ済みの3種類を検出し、種類ごとにユーザー確認後に削除する。
+
+```
+/smart-git-sync
+```
+
 ### smart-review-apply
 
 PR レビューコメント・ローカルファイル・会話内のレビュー結果からフィードバックを読み取り、コードに反映する。
