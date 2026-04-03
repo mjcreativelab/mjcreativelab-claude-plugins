@@ -1,0 +1,9 @@
+{
+  "name": "mjc-claude-skill-tool",
+  "description": "Claude Code スキルの品質改善ツール（skill-creator 連携 + コンテキスト管理・静的チェック）",
+  "version": "1.0.0",
+  "author": {
+    "name": "mjcreativelab"
+  },
+  "repository": "https://github.com/mjcreativelab/mjcreativelab-claude-plugins"
+}

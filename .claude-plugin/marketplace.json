@@ -9,6 +9,10 @@
     {
       "name": "mjc-git-workflow",
       "source": "./packages/mjc-git-workflow"
+    },
+    {
+      "name": "mjc-claude-skill-tool",
+      "source": "./packages/mjc-claude-skill-tool"
     }
   ]
 }
