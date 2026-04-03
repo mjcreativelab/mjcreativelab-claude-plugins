@@ -2,9 +2,9 @@
 name: skill-improver
 description: >
   既存スキルの品質改善。skill-creator eval + コンテキスト管理・静的チェックを実行する。
-  「改善して」「レビューして」「品質チェック」「eval 回して」「500行超えそう」
+  「スキルを改善して」「品質チェック」「eval 回して」「500行超えそう」
   「SKILL.md を見直して」「スキルが効かない」「トリガーされない」「行数オーバー」等で起動。
-  新規作成は skill-creator を使う。
+  コードレビュー（smart-review）や新規スキル作成（skill-creator）とは別物。
 argument-hint: "<skill-directory-path> [-p <prompt>]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Bash, Write, Skill, Edit, AskUserQuestion
