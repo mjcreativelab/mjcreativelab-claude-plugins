@@ -1,6 +1,6 @@
 {
   "name": "mjc-claude-skill-tool",
-  "description": "Claude Code スキルの品質改善ツール（skill-creator 連携 + コンテキスト管理・静的チェック）",
+  "description": "Claude Code のスキル品質改善と環境構成レビューのツール群（skill-creator 連携 + コンテキスト管理・静的チェック / アップデートレビュー）",
   "version": "1.0.1",
   "author": {
     "name": "mjcreativelab"

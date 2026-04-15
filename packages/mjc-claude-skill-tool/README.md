@@ -1,6 +1,6 @@
 # mjc-claude-skill-tool
 
-Claude Code スキルの品質改善ツール。
+Claude Code のスキル品質改善と環境構成レビューのツール群。
 
 ## なぜ skill-creator だけでは足りないのか
 
@@ -61,31 +61,55 @@ skill-creator が検出しにくい問題を静的に検証します。
 | 参照ファイルの存在確認 | SKILL.md 内リンクの参照先を Glob で確認 |
 | シェルスクリプト構文 | `bash -n` で構文チェック |
 
+### claude-code-update-review
+
+Claude Code のバージョンアップ後に、最新の公式推奨手法と現在の構成
+（`settings.json` / `commands/` / `rules/` / `skills/` / `CLAUDE.md` 等）を照合し、改善提案を 3 カテゴリ（即適用可 / 設計検討要 / 情報提供）に分類して出力する。
+
+対象は個別スキルの中身ではなく、**Claude Code 環境全体の設定と構成**。`skill-improver` とスコープは完全に別なので、用途に応じて使い分ける。
+
+| スキル | 対象 | 用途 |
+|---|---|---|
+| `skill-improver` | 単一の `SKILL.md` | スキル自体の品質改善（eval + 静的チェック） |
+| `claude-code-update-review` | Claude Code の環境全体 | バージョンアップ後の構成レビュー |
+
+調査観点: 新しい hook イベント、frontmatter フィールド、settings.json のキー、MCP 連携、Agent/subagent 機能、Plan Mode、パフォーマンス最適化など。
+
 ## 使い方
 
 ```bash
-# 基本
+# スキル品質改善
 /mjc-claude-skill-tool:skill-improver <skill-directory-path>
-
-# 改善の方向性をプロンプトで指定
 /mjc-claude-skill-tool:skill-improver <skill-directory-path> -p "<prompt>"
+
+# Claude Code アップデートレビュー
+/mjc-claude-skill-tool:claude-code-update-review
+/mjc-claude-skill-tool:claude-code-update-review -p "<prompt>"
 ```
 
 ### 例
 
 ```bash
-# パスのみ（skill-creator がインタビューで方向性を決める）
+# skill-improver: パスのみ（skill-creator がインタビューで方向性を決める）
 /mjc-claude-skill-tool:skill-improver .claude/skills/my-skill
 
-# プロンプト付き（改善の意図を skill-creator に直接伝える）
+# skill-improver: プロンプト付き（改善の意図を skill-creator に直接伝える）
 /mjc-claude-skill-tool:skill-improver packages/mjc-git-workflow/skills/smart-commit -p "コンテキスト管理を重点的に改善して"
 /mjc-claude-skill-tool:skill-improver .claude/skills/deploy -p "eval は不要、一緒に対話的に改善したい"
+
+# claude-code-update-review: 基本
+/mjc-claude-skill-tool:claude-code-update-review
+
+# claude-code-update-review: 観点指定
+/mjc-claude-skill-tool:claude-code-update-review -p "hooks の活用を重点的に"
 ```
 
 ## 前提条件
 
-skill-creator プラグインがインストール済みであること。
+`skill-improver` は skill-creator プラグインがインストール済みであること。
 
 ```bash
 /plugin install skill-creator@claude-plugins-official
 ```
+
+`claude-code-update-review` に追加の依存はない（`WebSearch` / `WebFetch` が利用可能な環境で動作）。
