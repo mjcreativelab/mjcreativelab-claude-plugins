@@ -19,6 +19,9 @@ bash -n packages/<plugin>/skills/<skill-name>/assets/<name>.sh
 
 # SKILL.md frontmatter 確認
 head -5 packages/<plugin>/skills/<skill-name>/SKILL.md
+
+# リリース（plugin.json のバージョンバンプ + タグ + リリース PR）
+/auto-release
 ```
 
 ## リポジトリ構造
@@ -39,11 +42,12 @@ packages/
       smart-review/              # ローカル変更のセルフレビュー
       smart-review-apply/        # レビューフィードバックの適用
     README.md
-  mjc-claude-skill-tool/           # スキル品質改善ツール
+  mjc-claude-skill-tool/           # スキル品質改善・環境構成レビューツール
     .claude-plugin/
       plugin.json
     skills/
       skill-improver/              # skill-creator 連携 + コンテキスト管理・静的チェック
+      claude-code-update-review/   # Claude Code バージョンアップ後の構成レビュー
     README.md
 .claude/
   rules/                         # プロジェクト共通ルール（Git 規約など）
@@ -66,7 +70,7 @@ packages/
 }
 ```
 
-`version` は `plugin.json` で管理する（`marketplace.json` との重複を避ける）。
+`version` と個別プラグインの `description` は `plugin.json` で管理する（`marketplace.json` との重複を避けるため、`marketplace.json` のプラグインエントリには `name` + `source` のみ記載する）。
 
 ### プラグインのディレクトリ構成
 
@@ -85,6 +89,8 @@ packages/
 ```
 
 必要なサブディレクトリだけ配置する。
+
+本 monorepo では user-invocable な機能も `commands/` ではなく `skills/` に統一する（`disable-model-invocation: true` を付けた Skill として追加する）。frontmatter・引数パース・コンテキスト管理の規約を揃えるため。
 
 ### マーケットプレイスカタログ
 
