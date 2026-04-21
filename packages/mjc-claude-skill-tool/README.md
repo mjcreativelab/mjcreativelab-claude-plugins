@@ -73,7 +73,14 @@ skill-creator が検出しにくい問題を静的に検証します。
 4. 1 イテレーション 1 テーマで最小修正を当て、新しい subagent で再実行
 5. 連続 2 回「新規不明瞭点ゼロ + 各メトリクスが飽和」で収束
 
-`skill-improver` との違い: `skill-improver` は SKILL.md を機能品質 + 静的チェックで改善する。`empirical-prompt-tuning` は指示文全般（プロンプト / slash command / CLAUDE.md 節 / コード生成プロンプトなど）を別エージェントの実行実測で磨く。両者は併用可能。
+`skill-improver` との使い分け:
+
+| スキル | 対象 | 主な手法 | 検出できる問題 | コスト |
+|---|---|---|---|---|
+| `skill-improver` | 単一の `SKILL.md` | skill-creator eval 委譲 + 機械的静的チェック | TODO 残留 / リンク切れ / bash 構文 / コンテキスト管理設計 | 軽（eval 1 iter + Grep / bash -n） |
+| `empirical-prompt-tuning` | テキスト指示全般（skill / slash / CLAUDE.md 節 / コード生成プロンプト） | 新規 subagent を dispatch して両面評価で反復 | 指示の曖昧さ / 裁量補完 / 再試行の発生点 | 重（subagent 複数 dispatch × 複数 iter） |
+
+両者は併用可能（先に `skill-improver` で機械的問題を潰し、重要スキルはさらに `empirical-prompt-tuning` で指示の明瞭性を測る）。
 
 出典: 本スキルは [mizchi/chezmoi-dotfiles](https://github.com/mizchi/chezmoi-dotfiles/blob/main/dot_claude/skills/empirical-prompt-tuning/SKILL.md) の `empirical-prompt-tuning` を参考にしている。
 

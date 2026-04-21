@@ -2,6 +2,7 @@
 name: smart-pr
 description: >
   現在のブランチから GitHub Pull Request を作成または更新する。作業内容の自動要約・ラベル付与・関連 Issue 紐づけを行う。
+  必要に応じてデフォルトブランチを現在のブランチへマージしてから push する（副作用あり）。
   「PR 作って」「プルリク作成」「PR 更新して」「/smart-pr」と言ったら起動する。
   コミット（smart-commit）やレビュー（smart-review）とは別物。
 disable-model-invocation: true
@@ -60,7 +61,7 @@ git merge-base --is-ancestor origin/<default-branch> HEAD
 ```
 
 - 含まれている → スキップ
-- 含まれていない（デフォルトブランチに新しいコミットがある）→ `git merge origin/<default-branch>` を実行
+- 含まれていない（デフォルトブランチに新しいコミットがある）→ **merge 実行前に behind の件数（例: 「behind 5 コミット」）をユーザーに提示して承認を得てから** `git merge origin/<default-branch>` を実行する（コンフリクトの有無に関わらず提示は必須）
   - **競合が発生した場合** → 競合ファイルの一覧と内容をユーザーに提示し、解決方針を確認してから対応する。ユーザーの承認なく `git add` しない
   - 競合なしでマージ成功 → 次へ
 
