@@ -3,6 +3,7 @@ name: smart-review-apply
 description: PR レビューコメント・ローカルファイル・会話内のレビュー結果からフィードバックを読み取り、コードに反映する。ユーザーが「レビュー反映して」「フィードバック適用」「/smart-review-apply」と言ったら起動する。
 disable-model-invocation: true
 allowed-tools: Read, Bash, Glob, Grep, Edit, Write, AskUserQuestion
+model: claude-sonnet-4-6
 ---
 
 # Smart Review Apply
