@@ -47,6 +47,7 @@ packages/
       plugin.json
     skills/
       skill-improver/              # skill-creator 連携 + コンテキスト管理・静的チェック
+      empirical-prompt-tuning/     # 新規 subagent 実行でプロンプト・skill を反復チューニング
       claude-code-update-review/   # Claude Code バージョンアップ後の構成レビュー
     README.md
 .claude/
