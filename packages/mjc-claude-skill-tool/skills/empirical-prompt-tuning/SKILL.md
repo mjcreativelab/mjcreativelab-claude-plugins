@@ -2,10 +2,13 @@
 name: empirical-prompt-tuning
 description: >
   agent 向けテキスト指示（skill / slash command / タスクプロンプト / CLAUDE.md 節 /
-  コード生成プロンプト）を、バイアスを排した実行者（新規 subagent）に動かしてもらい、
-  両面（実行者の自己申告 + 指示側メトリクス）で評価して反復改善する手法。
-  改善が頭打ちになるまで回す。プロンプトや skill を新規作成・大幅改訂した直後、
-  またはエージェントの挙動が期待通りにならない原因を指示側の曖昧さに求めたいときに使う。
+  コード生成プロンプト）の「指示の曖昧さ」を、新規 subagent（バイアスを排した実行者）に
+  dispatch して実際に動かしてもらい、両面（実行者の自己申告 + 指示側メトリクス）で
+  評価して反復改善する手法。改善が頭打ちになるまで回す。
+  プロンプトや skill を新規作成・大幅改訂した直後、またはエージェントの挙動が
+  期待通りにならない原因を指示側の曖昧さに求めたいときに使う。
+  TODO 残留・リンク切れ・bash 構文など機械的な静的チェックが目的なら
+  skill-improver を使う（本スキルは静的チェックは行わない）。
 argument-hint: "[対象プロンプトの参照]"
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion

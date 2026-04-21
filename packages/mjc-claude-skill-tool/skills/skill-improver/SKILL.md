@@ -1,9 +1,14 @@
 ---
 name: skill-improver
 description: >
-  既存スキルの品質改善。skill-creator eval + コンテキスト管理・静的チェックを実行する。
-  「スキルを改善して」「品質チェック」「eval 回して」「500行超えそう」
+  既存スキル（SKILL.md）を skill-creator eval 委譲 + 機械的静的チェックで仕上げる軽量ツール。
+  TODO / FIXME 残留、参照ファイルのリンク切れ、.sh 構文（bash -n）、
+  コンテキスト管理設計（再 Read ルール・中間データ外部化・API レスポンス絞り込み）を
+  Grep / Glob / bash で検証する。
+  「スキルを改善して」「品質チェック」「eval 回して」「500 行超えそう」
   「SKILL.md を見直して」「スキルが効かない」「トリガーされない」「行数オーバー」等で起動。
+  指示の曖昧さを新規 subagent の実行実測で炙り出したいときは empirical-prompt-tuning を使う
+  （本スキルは subagent dispatch は行わない）。
   コードレビュー（smart-review）や新規スキル作成（skill-creator）とは別物。
 argument-hint: "<skill-directory-path> [-p <prompt>]"
 disable-model-invocation: true
