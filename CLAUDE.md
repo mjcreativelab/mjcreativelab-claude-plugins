@@ -50,6 +50,14 @@ packages/
       empirical-prompt-tuning/     # 新規 subagent 実行でプロンプト・skill を反復チューニング
       claude-code-update-review/   # Claude Code バージョンアップ後の構成レビュー
     README.md
+  mjc-code-develop-tools/          # コード開発ライフサイクル支援（設計/レビュー/セキュリティ監査）
+    .claude-plugin/
+      plugin.json
+    skills/
+      software-architect/          # 要件・スペックから「あるべき設計」を言語化
+      code-reviewer/               # 仕様整合・設計適合・可読性の観点でレビュー
+      security-auditor/            # STRIDE・認可・データフロー等の設計セキュリティ監査
+    README.md
 .claude/
   rules/                         # プロジェクト共通ルール（Git 規約など）
   skills/
