@@ -13,6 +13,10 @@
     {
       "name": "mjc-claude-skill-tool",
       "source": "./packages/mjc-claude-skill-tool"
+    },
+    {
+      "name": "mjc-code-develop-tools",
+      "source": "./packages/mjc-code-develop-tools"
     }
   ]
 }
