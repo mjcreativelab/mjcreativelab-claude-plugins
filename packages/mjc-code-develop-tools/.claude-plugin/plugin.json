@@ -1,0 +1,9 @@
+{
+  "name": "mjc-code-develop-tools",
+  "description": "コード開発ライフサイクルを支援するスキル群（ソフトウェア設計 / コードレビュー / セキュリティ監査）",
+  "version": "1.0.0",
+  "author": {
+    "name": "mjcreativelab"
+  },
+  "repository": "https://github.com/mjcreativelab/mjcreativelab-claude-plugins"
+}
