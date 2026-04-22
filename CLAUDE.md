@@ -30,7 +30,7 @@ head -5 packages/<plugin>/skills/<skill-name>/SKILL.md
 .claude-plugin/
   marketplace.json               # マーケットプレイスカタログ（プラグイン一覧）
 packages/
-  mjc-git-workflow/              # Git ワークフロー系プラグイン
+  mjc-git-workflow-tools/        # Git ワークフロー系プラグイン
     .claude-plugin/
       plugin.json                # プラグインマニフェスト（name, version 等）
     skills/
@@ -42,7 +42,7 @@ packages/
       smart-review/              # ローカル変更のセルフレビュー
       smart-review-apply/        # レビューフィードバックの適用
     README.md
-  mjc-claude-skill-tool/           # スキル品質改善・環境構成レビューツール
+  mjc-claude-improver-tools/       # スキル品質改善・環境構成レビューツール
     .claude-plugin/
       plugin.json
     skills/

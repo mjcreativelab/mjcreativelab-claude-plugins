@@ -1,5 +1,5 @@
 {
-  "name": "mjc-claude-skill-tool",
+  "name": "mjc-claude-improver-tools",
   "description": "Claude Code のスキル品質改善と環境構成レビューのツール群（skill-creator 連携 + コンテキスト管理・静的チェック / アップデートレビュー）",
   "version": "1.2.1",
   "author": {
