@@ -5,6 +5,8 @@ Claude Code 用プラグイン（skills, hooks, rules）の開発リポジトリ
 ## よく使うコマンド
 
 ```bash
+# 個人設定（gitignore 対象）: .claude/settings.local.json にパーミッション allowlist など個人環境の設定を記述
+
 # ローカルでプラグインをテスト
 claude --plugin-dir ./packages/<plugin>
 
@@ -60,7 +62,7 @@ packages/
       security-auditor/            # STRIDE・認可・データフロー等の設計セキュリティ監査
     README.md
 .claude/
-  rules/                         # プロジェクト共通ルール（Git 規約など）
+  rules/                         # プロジェクト共通ルール（Git 規約など）← rules/ 配下の .md は Claude Code が自動読み込み
   skills/
     auto-release/                # バージョン更新・タグ付け・リリース（プロジェクトローカル）
 ```
@@ -227,3 +229,16 @@ bash ${CLAUDE_SKILL_DIR}/assets/git-sync.sh
 4. `.claude-plugin/marketplace.json` の `plugins` 配列にエントリを追加
 5. `claude --plugin-dir ./packages/<plugin-name>` でローカルテスト
 6. この `CLAUDE.md` のリポジトリ構造セクションにプラグインを追記
+
+## パッケージリネーム時の注意
+
+リネーム対象: ディレクトリ（`git mv`）、`plugin.json` の `name`、`marketplace.json`、`CLAUDE.md`、各 `README.md`、SKILL.md 内の参照、`settings.local.json` のパス
+
+Git タグは変更不可 — 旧タグは旧名のまま残る。新リリース以降のタグが新名になる。
+
+初回リリースタグ: コードが既に main にマージ済みでタグがない場合、リリースブランチ不要。マージコミットに直接タグ付けする。
+
+### パッケージ名変更履歴
+
+- `mjc-git-workflow` → `mjc-git-workflow-tools`（旧タグ: `mjc-git-workflow@1.1.4` まで）
+- `mjc-claude-skill-tool` → `mjc-claude-improver-tools`（旧タグ: `mjc-claude-skill-tool@1.2.1` まで）
