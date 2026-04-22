@@ -56,6 +56,7 @@ packages/
     skills/
       software-architect/          # 要件・スペックから「あるべき設計」を言語化
       code-reviewer/               # 仕様整合・設計適合・可読性の観点でレビュー
+      code-reviewer-adversarial/   # Breaker (Claude) × Judge (Codex) の敵対的レビュー
       security-auditor/            # STRIDE・認可・データフロー等の設計セキュリティ監査
     README.md
 .claude/
