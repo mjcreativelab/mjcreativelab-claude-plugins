@@ -1,4 +1,4 @@
-# mjc-git-workflow
+# mjc-git-workflow-tools
 
 Git ワークフローを自動化する Claude Code プラグインパッケージ。
 
@@ -101,6 +101,6 @@ PR レビュー元の場合はコメントへの返信も行う。
 # 1. marketplace として登録
 /plugin marketplace add mjcreativelab/mjcreativelab-claude-plugins
 
-# 2. mjc-git-workflow プラグインをインストール
-/plugin install mjc-git-workflow@mjcreativelab-claude-plugins
+# 2. mjc-git-workflow-tools プラグインをインストール
+/plugin install mjc-git-workflow-tools@mjcreativelab-claude-plugins
 ```

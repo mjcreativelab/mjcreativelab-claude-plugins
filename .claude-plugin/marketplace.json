@@ -7,12 +7,12 @@
   "description": "Claude Code 用プラグイン集",
   "plugins": [
     {
-      "name": "mjc-git-workflow",
-      "source": "./packages/mjc-git-workflow"
+      "name": "mjc-git-workflow-tools",
+      "source": "./packages/mjc-git-workflow-tools"
     },
     {
-      "name": "mjc-claude-skill-tool",
-      "source": "./packages/mjc-claude-skill-tool"
+      "name": "mjc-claude-improver-tools",
+      "source": "./packages/mjc-claude-improver-tools"
     },
     {
       "name": "mjc-code-develop-tools",
