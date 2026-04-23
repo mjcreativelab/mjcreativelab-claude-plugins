@@ -169,10 +169,12 @@ Phase 4 で Phase 3 の最終出力を PR へ投稿する際の仕様。
 
 - `mcp__plugin_github_github__pull_request_review_write` を使用する
   - `method: "create"`
+  - `owner`, `repo`: `git remote get-url origin` からパース（例: `https://github.com/foo/bar.git` → `owner=foo`, `repo=bar`）
+  - `pull_number`: 対象 PR 番号
   - `event: "COMMENT"`（approve / request_changes は人間レビュアーの判断に残す）
   - `body`: 下記テンプレートに従って生成した markdown
   - `comments: []`（行コメントは使わない）
-- PR 検出は `mcp__plugin_github_github__list_pull_requests` を `head: <branch>`, `state: "open"` で呼ぶ（Phase 0 の対象判別で実施）。現在ブランチは `git rev-parse --abbrev-ref HEAD` で取得する
+- PR 検出は `mcp__plugin_github_github__list_pull_requests` を `owner`, `repo`（上記と同様に origin から取得）, `head: <branch>`, `state: "open"` で呼ぶ（Phase 0 の対象判別で実施）。現在ブランチは `git rev-parse --abbrev-ref HEAD` で取得する
 
 ### 投稿本文テンプレート
 

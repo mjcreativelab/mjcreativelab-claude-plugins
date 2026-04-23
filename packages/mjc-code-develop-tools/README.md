@@ -35,7 +35,7 @@
 /code-reviewer [<PR番号|branch|ref..ref|path>]
 ```
 
-対象が PR（明示した PR 番号 / 現在ブランチに紐付く open PR）と判別できた場合、確認ゲート（`AskUserQuestion`）を経て、GitHub MCP でレビューを PR の Review（`event: "COMMENT"`）として投稿する。投稿しない選択や PR 非対象のケースではローカル出力のみとなる。
+対象が PR（明示した PR 番号 / 現在ブランチに紐付く open PR）と判別できた場合、確認ゲート（`AskUserQuestion`）を経て、GitHub MCP でレビューを PR の Review（`event: "COMMENT"`）として投稿する。投稿しない選択・PR 非対象・投稿失敗のいずれのケースもローカル出力は残り、レビュー処理自体は中断しない。
 
 ### code-reviewer-adversarial
 
