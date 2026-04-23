@@ -36,7 +36,7 @@ argument-hint: "[<PR番号|branch|ref..ref|path>]"
 | ブランチ名 | そのブランチに open PR が 1 件 → 有効 |
 | `ref..ref` / パス | 無効（PR に紐付かないため）|
 
-複数 PR がヒットした場合は `AskUserQuestion` で選ばせる。0 件なら書き出しモード無効。詳細は `## PR 書き出しモード` を参照。
+複数 PR / 0 件 / GitHub MCP 未接続などの失敗ケースの挙動は `## PR 書き出しモード` の「フォールバック」を参照。
 
 ## 手順
 
@@ -99,7 +99,7 @@ argument-hint: "[<PR番号|branch|ref..ref|path>]"
   - `event: "COMMENT"`（approve / request_changes は人間レビュアーの判断に残す）
   - `body`: 下記テンプレートに従って生成した markdown
   - `comments: []`（行コメントは使わない）
-- PR 検出は `mcp__plugin_github_github__list_pull_requests` を `head: <branch>`, `state: "open"` で呼ぶ
+- PR 検出は `mcp__plugin_github_github__list_pull_requests` を `head: <branch>`, `state: "open"` で呼ぶ。現在ブランチは `git rev-parse --abbrev-ref HEAD` で取得する
 
 ### 投稿本文テンプレート
 
