@@ -36,7 +36,7 @@
 - ...
 
 ### 推奨ブランチ名
-<!-- プロジェクトの git-conventions に従い {type}/issue-{番号}-{説明} 形式で提案する -->
+<!-- SKILL.md 手順 5 のブランチ命名規則に従い {type}/issue-{番号}-{説明} 形式で提案する -->
 <!-- type: feature / fix / refactor / docs / chore / test -->
 
 ```

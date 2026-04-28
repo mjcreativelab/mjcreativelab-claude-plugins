@@ -119,7 +119,20 @@ git diff <default-branch>...HEAD --stat
 
 ### 6-N. ラベル選定
 
-変更種別（feature/enhancement/bug/documentation/infra）からラベルを選定。リポジトリ既存ラベルや CLAUDE.md/rules の定義を優先。
+リポジトリ既存ラベル（`list_issues` の `labels` で確認可）の中から、変更種別に合致するものを選定する。プロジェクト側に独自のラベル運用ルール（CLAUDE.md・AGENTS.md・README 等で明示されている場合）があればそちらを優先する。
+
+汎用的な対応指針:
+
+| 変更種別           | 推奨ラベル候補（リポジトリに存在するものを使う） |
+| ------------------ | ------------------------------------------------ |
+| 新機能・機能追加   | `feature`, `enhancement`                         |
+| バグ修正           | `bug`, `fix`                                     |
+| ドキュメント       | `documentation`, `docs`                          |
+| ビルド・CI・依存   | `infra`, `chore`, `ci`                           |
+| リファクタリング   | `refactor`                                       |
+| テスト             | `test`                                           |
+
+リポジトリに該当ラベルが存在しない場合はラベル無しでも可。新規ラベル作成は提案しない。
 
 ### 7-N. PR タイトル・本文作成
 

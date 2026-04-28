@@ -2,6 +2,42 @@
 
 Claude Code 用プラグイン（skills, hooks, rules）の開発リポジトリ。
 
+## Git / GitHub 運用
+
+### ブランチ運用
+
+- **main への直接コミットは禁止** — 必ず feature branch を作成し、PR 経由でマージする
+- **すべての変更は PR を作成する** — レビューなしで main に直接 push しない
+- Commit messages: 日本語 OK、conventional commits を推奨
+
+### ブランチ命名規則
+
+フォーマット: `{type}/issue-{番号}-{簡潔な説明}`
+
+| prefix      | 用途                             |
+| ----------- | -------------------------------- |
+| `feature/`  | 新機能・機能追加                 |
+| `fix/`      | バグ修正                         |
+| `refactor/` | リファクタリング（機能変更なし） |
+| `docs/`     | ドキュメントのみの変更           |
+| `chore/`    | ビルド・CI・依存関係など雑務     |
+| `test/`     | テストの追加・修正               |
+
+ルール:
+- **kebab-case**（小文字 + ハイフン区切り）を使う
+- Issue に紐づく作業は必ず `issue-{番号}` を含める
+- 説明部分は **英語・3〜5 語** 程度に収める
+- マイルストーン分割がある場合は末尾に `-m{番号}` を付ける
+- Issue に紐づかない繰り返し作業（chore/docs/refactor 等）は、末尾にタイムスタンプ `-YYYYMMDD` を付けて一意にする（例: `docs/update-readme-20260326`）
+
+### PR / Issue 作成ルール
+
+- PR・Issue 作成時は作成者を自動アサインする（GitHub MCP の `get_me` または `gh api user` で取得した GitHub ユーザー名を使用）
+- Issue 作成時は内容に適した既存ラベルを付与する
+- **Issue 作成は GitHub MCP ツール (`issue_write`) を使用する**（ラベル付与・アサインも同ツールで行う）
+
+> 上記規則は `smart-commit` / `smart-issue-plan` / `smart-issue-resolve` / `smart-pr` の各 SKILL.md にも内蔵されている（マーケットプレイス経由でインストールされた利用者がプロジェクト外ファイルを参照できないため）。本リポジトリで作業する際は CLAUDE.md（本セクション）が一次情報源。
+
 ## よく使うコマンド
 
 ```bash
@@ -62,7 +98,6 @@ packages/
       security-auditor/            # STRIDE・認可・データフロー等の設計セキュリティ監査
     README.md
 .claude/
-  rules/                         # プロジェクト共通ルール（Git 規約など）← rules/ 配下の .md は Claude Code が自動読み込み
   skills/
     auto-release/                # バージョン更新・タグ付け・リリース（プロジェクトローカル）
 ```
@@ -204,7 +239,7 @@ bash ${CLAUDE_SKILL_DIR}/assets/git-sync.sh
 - SKILL.md は **500行以下**に保つ。大きなコンテンツは `assets/` または `references/` に切り出す
 - GitHub API 操作は MCP ツールに統一する（`gh` CLI との混在を避ける）
 - `SKILL.md` + `README.md` を同時に更新すること。外部スクリプトがある場合はそれも更新
-- スキルの動作が `.claude/rules/` のルールと関連する場合、ルールファイルも整合性を保って更新すること
+- スキルの動作が CLAUDE.md の Git/GitHub 運用規則と関連する場合、CLAUDE.md と整合性を保って更新すること（Git 規約はプラグイン外参照不可のため各 SKILL.md にも内蔵されている）
 - シェルスクリプト改修後は `bash -n` で構文チェックすること
 - SKILL.md にインラインで埋め込むシェルスクリプトに正規表現パターン（`^[[:space:]]` 等）が含まれる場合、zsh がグロブ展開してエラーになる。`bash /dev/stdin` または一時ファイル経由で実行する旨を明記すること
 - 複数フェーズのスキルでは「後半を省略すると危険」ではなく「前半が本体」と記述する。escape hatch（スキップ条件）は最小限にし、フェーズ境界にゲート（前提確認）を設ける
