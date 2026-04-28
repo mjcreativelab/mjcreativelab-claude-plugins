@@ -6,6 +6,7 @@ description: >
   「コミットして」「差分をコミット」「変更をまとめて」「作業区切りたい」「一旦コミット」
   「今の状態を保存」「ここまでの変更を記録」等で起動する。
   コードレビュー（smart-review）や PR 作成（smart-pr）とは別物。
+argument-hint: "[-p <フィルタ指示>]"
 disable-model-invocation: true
 allowed-tools: Read, Bash, Glob, Grep, Edit, Write, AskUserQuestion
 ---
@@ -40,20 +41,41 @@ allowed-tools: Read, Bash, Glob, Grep, Edit, Write, AskUserQuestion
 - **作業ブランチだが変更がブランチ目的と異なる場合** → 別ブランチへの切り替えを提案（同様に既存流用 / 新規作成の 2 択）
 - **適切な場合** → 何も表示せず次へ
 
-切り替え・新規作成前に必ずユーザーに確認を取る。命名規則は CLAUDE.md/rules を参照、なければ `feature/<短い説明>` 形式。
+ただし `-p` でコミット対象が絞られている場合、対象外ファイルが working tree に残ることをもってブランチ切替提案を出してはならない（`-p` の明示指示はブランチ目的より優先する。Step 4 のフィルタリングと整合）。
 
-**ブランチ名のルール**（CLAUDE.md/rules の命名規則に加えて以下を遵守）:
+切り替え・新規作成前に必ずユーザーに確認を取る。プロジェクト側に独自のブランチ命名規則（CLAUDE.md・AGENTS.md・README 等で明示されている場合）があればそちらを優先し、なければ以下の規則に従う。
+
+**ブランチ命名規則**:
+
+フォーマット: `{type}/issue-{番号}-{簡潔な説明}`
+
+| prefix      | 用途                             |
+| ----------- | -------------------------------- |
+| `feature/`  | 新機能・機能追加                 |
+| `fix/`      | バグ修正                         |
+| `refactor/` | リファクタリング（機能変更なし） |
+| `docs/`     | ドキュメントのみの変更           |
+| `chore/`    | ビルド・CI・依存関係など雑務     |
+| `test/`     | テストの追加・修正               |
+
+ルール:
+- **kebab-case**（小文字 + ハイフン区切り）を使う
 - 日本語は使わない（ASCII 英数字 + ハイフン + スラッシュのみ）
-- chore/docs/refactor など繰り返し発生しうる作業のブランチは、接尾辞にタイムスタンプを付けて一意にする（例: `docs/update-readme-20260326`、形式は `YYYYMMDD`）
+- Issue に紐づく作業は必ず `issue-{番号}` を含める
+- 説明部分は **英語・3〜5 語** 程度に収める
+- マイルストーン分割がある場合は末尾に `-m{番号}` を付ける
+- Issue に紐づかない繰り返し作業（chore/docs/refactor 等）は、末尾にタイムスタンプ `-YYYYMMDD` を付けて一意にする（例: `docs/update-readme-20260326`）
 
 ### 3. 差分の収集と分析
 
-`git status`, `git diff`, `git diff --cached`, `git log --oneline -5` を並列実行。差分が大きい場合（目安: 500 行超）はファイル単位の変更要約に切り替え、全行をコンテキストに載せない。
+`git status`, `git diff`, `git diff --cached`, `git log --oneline -5` を **1 メッセージ内で複数の Bash 呼び出しに分けて並列実行** する。
+
+差分が大きい場合（`git diff --stat` の総変更行数が 500 行を超えるのが目安）は、まず `git diff --stat` でファイル別の増減行数を取得し、変更が大きいファイルや判断に必要なファイルだけ `git diff <path>` で個別に確認する。全ファイルの全行をコンテキストに載せない。
 
 ### 4. フィルタリング + コミット単位の分割
 
 **ブランチ連動フィルタリング**（main 以外の場合）:
-- ブランチ名から目的を推定。Issue 番号があれば GitHub MCP ツール（`issue_read`）で詳細確認し、タイトル・ラベル・本文冒頭のみ保持する（全フィールドをコンテキストに残さない）
+- ブランチ名から目的を推定。Issue 番号があれば GitHub MCP の `issue_read` ツール（`mcp__plugin_github_github__issue_read` 等。`gh` CLI ではなく MCP に統一）で詳細確認し、タイトル・ラベル・本文冒頭のみ保持する（全フィールドをコンテキストに残さない）
 - 目的に合致しない変更は除外（working tree に残す）。除外したファイルはコミット計画の提示で「別ブランチでの対応が望ましい」旨を明示するに留め、**勝手に新ブランチを作らない**
 - `-p` の指示はブランチ連動より優先。`-p` で対象が絞られた結果、ブランチ目的外のファイルが working tree に残る場合でも Step 2 のブランチ切替提案は発生させない（`-p` の明示指示を尊重）
 
@@ -64,7 +86,13 @@ allowed-tools: Read, Bash, Glob, Grep, Edit, Write, AskUserQuestion
 
 ### 5. ignore 確認
 
-untracked に機密ファイル・ビルド成果物・OS生成ファイルがあれば `.gitignore` 追加を提案。
+untracked に以下のいずれかが含まれていれば `.gitignore` 追加を提案する:
+
+- 機密ファイル（`.env`, `.env.local`, `*.pem`, `*.key`, `id_rsa`, `secrets.*`, `credentials.*` 等）
+- ビルド成果物（`dist/`, `build/`, `node_modules/`, `*.pyc`, `__pycache__/`, `target/`, `.next/`, `coverage/` 等）
+- OS / エディタ生成ファイル（`.DS_Store`, `Thumbs.db`, `.idea/`, `.vscode/`（プロジェクト指定がない限り）等）
+
+機密ファイルが既に staging に含まれている場合は強く警告し、ユーザー承認なしにはコミットしない。
 
 ### 6. コミット計画の提示
 
@@ -81,6 +109,11 @@ EOF
 )"
 ```
 
+**pre-commit hook 失敗時**:
+- 失敗原因（lint / format / type check 等）を修正してから再 add し、**新規コミットを作成する**
+- `git commit --amend` は使わない（hook 失敗時はコミットが作成されていないため、`--amend` は意図せず直前のコミットを書き換える）
+- `--no-verify` で hook をスキップしない（hook はプロジェクト側の品質ゲート）
+
 ### 8. 結果報告
 
 `git log --oneline -<作成数>` で一覧表示。
@@ -89,16 +122,22 @@ EOF
 
 ```
 <emoji> <type>(<scope>): <subject>
+
+<body: 任意。空行で区切る>
 ```
 
 - **subject**: 日本語、50文字以下、末尾ピリオドなし
 - **scope**: 英語、CLAUDE.md/rules の定義優先。なければディレクトリ/モジュール名から判断
-- 必要に応じて body に詳細追記
+- **body** を書くケース:
+  - 破壊的変更がある（migration 手順や影響範囲を明示）
+  - バグ修正で根本原因を記録したい
+  - 複数ファイル/モジュールにまたがる構造変更で、subject だけでは意図が伝わらない
+  - 関連 Issue / PR への参照（`Refs: #123`, `Closes: #456`）
 
 GitMoji と type の対応: [references/gitmoji-types.md](references/gitmoji-types.md)
 
 ## 注意事項
 
-- `Co-Authored-By` トレーラーは付けない
+- `Co-Authored-By` トレーラーは付けない（Claude Code のデフォルト挙動を上書きする明示ルール。コミット主体は人間として記録する）
 - `--no-verify` は使わない（hook 失敗時は原因を修正して再コミット）
 - リモートへの push はしない（ユーザーの明示的指示がある場合のみ）
