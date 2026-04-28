@@ -26,6 +26,24 @@ skill-improver はこのギャップを埋めるために、skill-creator の改
 
 スキル定義（SKILL.md）を 2 フェーズで改善する。
 
+#### 対象とするスキル定義
+
+Claude Code のスキル仕様（`SKILL.md` ベース）に従ったディレクトリを対象とする。具体的には以下の構成:
+
+```
+<skill-name>/
+├── SKILL.md          # frontmatter（name + description 必須）+ 本文（500 行以下推奨）
+├── references/       # 参照表・チェックリスト等の読み取り専用情報（任意）
+└── assets/           # テンプレート・スクリプト（任意）
+```
+
+公式仕様・規約の出典:
+
+- 本リポジトリの [`CLAUDE.md`](../../CLAUDE.md) 「スキルファイル形式」セクション（frontmatter / 文字列置換 / 動的コンテキスト注入）
+- Anthropic 公式の [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator)（eval 駆動の改善ループ）
+
+skill-improver の Phase 1 は上記 skill-creator に委譲し、Phase 2 で公式推奨との差分・コンテキスト管理・静的整合性を補完する。
+
 **Phase 1: skill-creator による eval 駆動の改善**
 
 skill-creator を改善モードで呼び出し、以下のループを実行します:
@@ -36,9 +54,18 @@ skill-creator を改善モードで呼び出し、以下のループを実行し
 4. SKILL.md の修正
 5. description の統計的最適化（should-trigger / should-not-trigger テスト）
 
-**Phase 2: コンテキスト管理 + 静的チェック**
+**Phase 2: 公式推奨差分 + コンテキスト管理 + 静的チェック**
 
-skill-creator が検出しにくい問題を静的に検証します。
+skill-creator が検出しにくい問題を、最新の Claude Code 公式推奨との差分照合・静的検証で炙り出し、改善提案を **A（即適用可）/ B（設計検討要）/ C（情報提供）** の 3 カテゴリで出力します。
+
+公式ベストプラクティス調査（`WebSearch` / `WebFetch`）の観点:
+
+- 新しい frontmatter フィールド（`context`, `agent`, `model`, `disable-model-invocation`, `user-invocable` 等）の活用
+- 動的コンテキスト注入（`` !`command` `` 構文、`${CLAUDE_SKILL_DIR}` / `${CLAUDE_SESSION_ID}`）の活用
+- `disable-model-invocation` の設定漏れ
+- `references/` への切り出し方針、`assets/` の使い分け
+- `description` の発火精度（キーワード列挙・否定形の活用度）
+- スキル間呼び出しの最新規約（`plugin:skill` 名前空間）
 
 コンテキスト管理チェック:
 
@@ -77,7 +104,7 @@ skill-creator が検出しにくい問題を静的に検証します。
 
 | スキル | 対象 | 主な手法 | 検出できる問題 | コスト |
 |---|---|---|---|---|
-| `skill-improver` | 単一の `SKILL.md` | skill-creator eval 委譲 + 機械的静的チェック | TODO 残留 / リンク切れ / bash 構文 / コンテキスト管理設計 | 軽（eval 1 iter + Grep / bash -n） |
+| `skill-improver` | 単一の `SKILL.md` | skill-creator eval 委譲 + 公式推奨差分 + 機械的静的チェック | TODO 残留 / リンク切れ / bash 構文 / コンテキスト管理設計 / 古いパターン残留 | 軽（eval 1 iter + WebSearch + Grep / bash -n） |
 | `empirical-prompt-tuning` | テキスト指示全般（skill / slash / CLAUDE.md 節 / コード生成プロンプト） | 新規 subagent を dispatch して両面評価で反復 | 指示の曖昧さ / 裁量補完 / 再試行の発生点 | 重（subagent 複数 dispatch × 複数 iter） |
 
 両者は併用可能（先に `skill-improver` で機械的問題を潰し、重要スキルはさらに `empirical-prompt-tuning` で指示の明瞭性を測る）。
